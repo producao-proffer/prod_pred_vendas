@@ -9,86 +9,43 @@ import urllib
 import pandas as pd
 from typing import List
 from config.app_config import Config
-from sshtunnel import SSHTunnelForwarder
 from decimal import Decimal
 from bson.decimal128 import Decimal128
 
-def query_rds(sql,data_science, conn_list):
+def query_rds(sql, conn_list):
+    
+
     """
 
     Parameters
         ----------
-        data_science : bool, optional
-            If the code is being used outside the VPC, then we need to do a tunneling. Set this parameter to True
-
     """
 
-    if data_science:
-        
-        try:
-
-            # Create an SSH tunnel
-
-            with SSHTunnelForwarder(
-                Config.SSH_HOST,
-                ssh_username=Config.SSH_USERNAME,
-                ssh_pkey=Config.SSH_PKEY_PATH,
-                remote_bind_address=(Config.DATABASE_TENANT_HOSTNAME, 7678)) as server:
-                
-                print("****SSH Tunnel Established****") 
-
-                conn = psycopg2.connect(
-                    
-
+    try:
+        conn = psycopg2.connect(
                     user=conn_list[3],
                     password = conn_list[4],
-                    host = "localhost",  
-                    port= server.local_bind_port,
+                    host = conn_list[0], 
+                    port= conn_list[1],
                     database = conn_list[2]
                     )
 
 
-                # Get a database cursor
-                cur = conn.cursor()
+                            # Get a database cursor
+        cur = conn.cursor()
 
-                # Execute SQL
-                cur.execute(sql)
-                # Get the result
-                result = cur.fetchall()
+        # Execute SQL
+        cur.execute(sql)
+        # Get the result
+        result = cur.fetchall()
 
+        conn.close()
+        return result
 
-                conn.close()
-            return result
+    except Exception as ex:
+        print(ex)
 
-        except Exception as ex:
-            print(ex)
-
-    else:
-        try:
-            conn = psycopg2.connect(
-                        user=conn_list[3],
-                        password = conn_list[4],
-                        host = conn_list[0], 
-                        port= conn_list[1],
-                        database = conn_list[2]
-                        )
-
-
-                                # Get a database cursor
-            cur = conn.cursor()
-
-            # Execute SQL
-            cur.execute(sql)
-            # Get the result
-            result = cur.fetchall()
-
-            conn.close()
-            return result
-
-        except Exception as ex:
-            print(ex)
-
-    return None
+    # return None
 
 
 def query_iqvia(lista_eans):
@@ -183,8 +140,6 @@ class DatabaseClient:
 
         Parameters
         ----------
-        data_science : bool, optional
-            If the code is being used outside the VPC, then we need to do a tunneling. Set this parameter to True
 
         
     ...
@@ -207,9 +162,9 @@ class DatabaseClient:
 
     """
 
-    def __init__(self,data_science = False):
-        # self.connection = create_connection(data_science)
-        self.ds = data_science
+    def __init__(self):
+        # self.connection = create_connection()
+        return None
 
     def get_connection(self) -> psycopg2.connect:
         """
@@ -224,7 +179,7 @@ class DatabaseClient:
         """
 
         try:
-            result= query_rds(sql, self.ds, lista_conn)
+            result= query_rds(sql, lista_conn)
 
 
 

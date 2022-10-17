@@ -35,11 +35,6 @@ class AppConfig:
     DATABASE_TENANT_PASSWORD: str
     DATABASE_TENANT_PEM_PATH: str
 
-    SSH_PKEY_PATH:str
-    SSH_HOST:str
-    SSH_PORT:str
-    SSH_USERNAME:str
-
     DOCUMENTDB_USERNAME:str
     DOCUMENTDB_PASSWORD:str
     DOCUMENTDB_DB:str
