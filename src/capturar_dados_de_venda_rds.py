@@ -47,4 +47,6 @@ def captura_dados_de_venda_cliente(conn_info:list):
 
     
 
+    
+
     return df
