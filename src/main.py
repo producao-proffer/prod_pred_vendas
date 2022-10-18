@@ -39,8 +39,6 @@ def main():
         print(' ', end = '\n', flush = True)
         df_transacoes = df_transacoes.merge(db_iqvia, on = 'ean', how='left')
 
-        print(df_transacoes.head())
-
         """ TO DO: Nem todos os eans que estão aqui estão na nossa tabela IQVIA. Temos que trabalhar em cima dos eans que não 
         forem encontrados. """
         # print(df_transacoes[df_transacoes['classe4'].isna()].head())
@@ -58,10 +56,26 @@ def main():
         
         final = pd.concat([final,df_transacoes])
 
+    def get_lista_lojas(df):
+        resultado = [{'codloja':i, 'qtdvendida':j} for i,j in zip(df['codloja'],df['qtdvendida'])]
 
-    return insere_dados_DocDB(False, final)
+        return resultado
+
+
+    final = final.groupby(by = ['rede','classe4', 'forma3']).apply(get_lista_lojas)
+
+    final = final.reset_index()
+
+    final = final.dropna()
+
+    final.columns = ['rede','classe4','forma3','previsoes']
+
+    final = [{'rede': i, 'classe4':j, 'forma3':k, 'previsoes':l} for i,j,k,l in zip(final['rede'], final['classe4'],final['forma3'],final['previsoes'])]
+
     
-    return None
+    return insere_dados_DocDB(final)
+    
+    # return None
 
 
 

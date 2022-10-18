@@ -29,7 +29,7 @@ def captura_dados_de_venda_cliente(conn_info:list):
     left join dbo.produto p on v.codproduto = p.codproduto
     left join dbo.produtoloja pl on v.codproduto = pl.codproduto
     where (TO_DATE(datavenda,'YYYY-MM-DD') >= date(cast(now() as date) + INTERVAL '-2 week'))
-    and (v.precovenda > 0) and (pl.aplica_teste = True)
+    and (v.precovenda > 0) and (pl.aplica_teste is not FALSE)
     group by 
         p.ean,
         v.codproduto,

@@ -52,7 +52,7 @@ def query_iqvia(lista_eans):
 
     user = Config.DOCUMENTDB_USERNAME
     password = urllib.parse.quote_plus(Config.DOCUMENTDB_PASSWORD)
-    db = Config.DOCUMENTDB_DB
+    db = Config.DOCUMENTDB_DB_IQVIA
     host = Config.DOCUMENTDB_HOST
     port = Config.DOCUMENTDB_PORT
     pem_path = Config.DATABASE_TENANT_PEM_PATH
@@ -103,11 +103,11 @@ def convert_decimal(dict_item):
     return dict_item
 
 
-def inserir_document_db(df_de_transacoes):
+def inserir_document_db(info):
     # print(df_de_transacoes)
     user = Config.DOCUMENTDB_USERNAME
     password = urllib.parse.quote_plus(Config.DOCUMENTDB_PASSWORD)
-    db = Config.DOCUMENTDB_DB
+    db = Config.DOCUMENTDB_DB_ELASTICIDADE
     host = Config.DOCUMENTDB_HOST
     port = Config.DOCUMENTDB_PORT
     pem_path = Config.DATABASE_TENANT_PEM_PATH
@@ -120,7 +120,7 @@ def inserir_document_db(df_de_transacoes):
     db = client[db]
 
     # Collection name
-    col = db["transacao"]
+    col = db["previsao_venda"]
     count = 0
 
     list_of_itens = []
@@ -128,8 +128,6 @@ def inserir_document_db(df_de_transacoes):
     # print('Removendo', flush = True, end = '\n')
     db.transacao.delete_many({})
     # print('Inserindo', flush = True, end = '\n')
-
-    info = df_de_transacoes.to_dict(orient = 'records')
     
     return col.insert_many(info)
 
